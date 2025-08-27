@@ -1,13 +1,14 @@
-# Welcome to my Presentation Portfolio!
+# Welcome to my presentation portfolio!
 
-Hello and welcome!\
-This is my portfolio of academic presentations.\
-Here you’ll find links to the slides from my conference talks since 2025.
+Hi, and thanks for stopping by!  
+This is where I share my portfolio of academic presentations.  
+Here you’ll find slides from my conference talks starting in 2025.  
 
-If you’d like to get in touch, feel free to email me at: [m.deneken\@uc.cl](mailto:m.deneken@uc.cl){.email}.
+I’m Matías Montero — a 🎓 DPhil Student in Education at the University of Oxford and a 📊 Research Assistant at the Centre for Advanced Research in Education, Institute of Education, University of Chile.
 
-| Conference  | Title                                                                                                                                                                                              | Link                                                                                                      | Language |
-|-----------|-----------------------------------|----------------|-----------|
-| ISPP – 2025 | The Impact of Ethnic Identity and Conflictive Intergroup Relations on Mental Health Outcomes. *Dynamics between Indigenous and Non-Indigenous Peoples in Chile. Longitudinal Evidence (2016–2023)* | [Presentation](https://matdknu.github.io/presentations/ispp/mental_health/presentacion_mental.html)       | ENG      |
-| ISPP – 2025 | A longitudinal examination of factors legitimizing intergroup violence. *Dynamics between indigenous and non-indigenous people in Chile (2016 - 2023).*                                            | [Presentation](https://matdknu.github.io/presentations/ispp/conflict_violence/presentacion_violence.html) | ENG      |
-| LASA – 2025 | Una radiografía a la cobertura mediática de las policías en Chile. *Análisis longitudinal a partir los medios de prensa on-line (2000 – 2024).*                                                    | [Presentation](https://matdknu.github.io/lasa_2025/)                                                      | ESP      |
+🌐 You can also find me here:  
+- [Google Scholar](https://scholar.google.com/citations?user=Bsr3stIAAAAJ&hl=en&authuser=2)  
+- [ORCID](https://orcid.org/0000-0003-1610-2477)  
+- [University of Oxford profile](https://www.ox.ac.uk/](https://www.education.ox.ac.uk/person/matias-montero-salazar/))
+
+✉️ If you’d like to get in touch, feel free to email me at: [matias.montero@education.ox.ac.uk.cl](mailto:matias.montero@education.ox.ac.uk)
