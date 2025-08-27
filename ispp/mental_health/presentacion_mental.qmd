@@ -1,0 +1,48 @@
+---
+title: The Impact of Ethnic Identity and Conflictive Intergroup Relations on Mental Health Outcomes.
+subtitle: Dynamics between Indigenous and Non-Indigenous Peoples in Chile. Longitudinal Evidence (2016–2023) 
+format: clean-revealjs
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+author: 
+  - name: Matías Deneken
+    orcid: 0000-0000-0000-0000
+    email: m.deneken@uc.cl
+    affiliations: 
+      - OLES
+      - Pontificia UC Chile
+  - name: Gustavo Ahumada
+    affiliations: 
+      - Pontificia UC Chile
+  - name:  Catalina Nuñez
+    affiliations: 
+      -  Zurich
+  - name: Alex Behn
+    affiliations: 
+      - Pontificia UC Chile
+      - MIDAP
+date: "July 3, 2025"
+footer: "ISPP 2025 Annual Meeting"
+logo: "images/logo.jpeg"
+---
+
+## Introduction
+
+## Literature review
+
+## Methods
+
+### Data
+
+### Analysis
+
+
+## Results
+
+## Conclusions
+
+
+
+
+
