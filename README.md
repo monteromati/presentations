@@ -11,4 +11,4 @@ I’m Matías Montero — a 🎓 DPhil Student in Education at the University of
 - [ORCID](https://orcid.org/0000-0003-1610-2477)  
 - [University of Oxford profile](https://www.ox.ac.uk/](https://www.education.ox.ac.uk/person/matias-montero-salazar/))
 
-✉️ If you’d like to get in touch, feel free to email me at: [matias.montero@education.ox.ac.uk.cl](mailto:matias.montero@education.ox.ac.uk){.email}
+✉️ If you’d like to get in touch, feel free to email me at: [matias.montero@education.ox.ac.uk.cl](mailto:matias.montero@education.ox.ac.uk)
