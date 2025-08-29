@@ -1,0 +1,653 @@
+---
+title: <span style="color:#548893;">**Redes y Disparidades de Género en las Carreras de Investigadores en Educación de América Latina**</span>
+format: clean-revealjs
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+author: 
+  - name: Matías Montero
+    orcid: 0000-0003-1610-2477
+    email: matias.montero@education.ox.ac.uk
+    affiliations: 
+      - Department of Education, University of Oxford
+      - CIAE, Instituto de Estudios Avanzados en Educación (IE), Universidad de Chile
+date: "August 27, 2025"
+footer: "Seminarios Internos del IE y CIAE"
+logo: "images/logo.png"
+---
+
+## <span style="color:#548893;">**Antecedentes**</span>
+
+::: {.incremental}
+- **Segregación de género entre disciplinas**\
+  A pesar de la sobre-representación femenina en campos feminizados, académicas enfrentan *brechas salariales*, *menor financiamiento en investigación* y una carga desproporcionada de *docencia y tareas administrativas* que dificultan su *promoción* (Shen, 2013; Hsiang & Lian, 2022; Schröder et al., 2024).
+
+- **Economía del prestigio y barreras de género**\
+  Las *estructuras de incentivos académicos*, al priorizar publicaciones en revistas del Norte global, suelen relegar el servicio y otras tareas estereotípicamente feminizadas. Al mismo tiempo, las trayectorias de carrera no lineales continúan restringiendo la movilidad académica de las mujeres (Coate & Kandiko, 2016; Kizilcec et al., 2023).
+
+- **Efecto Mateo y género**\
+  Las ventajas tempranas se acumulan con el tiempo, sumado a que contribuciones de las mujeres son con frecuencia invisibilizadas (Merton, 1968; Rossiter, 1993; Ni et al., 2021).
+:::
+
+    
+## <span style="color:#548893;">**Brechas de Género No se Explican por Indicadores Macro**</span>
+
+```{r}
+#| echo: false
+if(!require(pacman)) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse,
+  vroom,
+  plotly,
+  htmlwidgets
+)
+
+setwd("G:/Mi unidad/presentations/dphil/ciae_seminar")
+
+data_country <- vroom("data_countries.csv")
+
+data_country <- data_country %>%
+  mutate(country = case_when(
+    geoUnit == "ARG" ~ "Argentina",
+    geoUnit == "BOL" ~ "Bolivia",
+    geoUnit == "CHL" ~ "Chile",
+    geoUnit == "COL" ~ "Colombia",
+    geoUnit == "CRI" ~ "Costa Rica",
+    geoUnit == "DEU" ~ "Germany",
+    geoUnit == "ECU" ~ "Ecuador",
+    geoUnit == "ESP" ~ "Spain",
+    geoUnit == "GTM" ~ "Guatemala",
+    geoUnit == "HND" ~ "Honduras",
+    geoUnit == "MAC" ~ "Macao (China)",
+    geoUnit == "PAN" ~ "Panama",
+    geoUnit == "PRT" ~ "Portugal",
+    geoUnit == "PRY" ~ "Paraguay",
+    geoUnit == "SLV" ~ "El Salvador",
+    geoUnit == "URY" ~ "Uruguay",
+    geoUnit == "VEN" ~ "Venezuela",
+    TRUE ~ geoUnit
+  ),
+  indicator = case_when(
+    indicatorId == "FRESP.TFTE" ~ "% of female researchers")
+  )
+
+data_country <- data_country %>%
+  mutate(gender_gap = round(100 - 2 * value, 1))
+
+data_country <- select(data_country, year, country, indicator, value, gender_gap)
+
+# Crear una nueva variable para clasificar el HDI según PNUD (2023)
+data_country <- data_country %>%
+  mutate(hdi_category = case_when(
+    country %in% c("Chile", "Argentina", "Uruguay", "Costa Rica", "Panama") ~ "High HDI (> 0.8)",
+    country %in% c("Colombia", "Ecuador", "Paraguay", "Venezuela") ~ "Medium-High HDI (0.7 - 0.8)",
+    country %in% c("Bolivia", "El Salvador", "Guatemala", "Honduras") ~ "Medium-Low HDI (< 0.7)",
+    TRUE ~ NA_character_
+  ))
+
+data_country$hdi_category <- factor(data_country$hdi_category,
+                                    labels = c("Medium-Low HDI (< 0.7)",
+                                               "Medium-High HDI (0.7 - 0.8)",
+                                               "High HDI (> 0.8)"),
+                                    levels = c("Medium-Low HDI (< 0.7)",
+                                               "Medium-High HDI (0.7 - 0.8)",
+                                               "High HDI (> 0.8)"),
+                                    ordered = T)
+
+# Filtrar solo los países que tengan HDI definido
+data_filtered <- data_country %>%
+  filter(indicator == "% of female researchers",
+         !is.na(hdi_category))
+
+# Crear el gráfico con facet_wrap por HDI category
+p <- data_filtered %>% 
+  ggplot(aes(x = year, y = gender_gap, color = country)) +
+  geom_line(linewidth = 1) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dotted", size = 1) +
+  facet_wrap(~ hdi_category) +
+  scale_x_continuous(breaks = seq(2000, 2022, 4), limits = c(2000, 2022)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"),
+                     breaks = seq(-25, 45, 10), limits = c(-25, 47)) +
+  scale_color_manual(values = c(
+  "Argentina"  = "#440154FF",
+  "Bolivia"    = "#481F70FF",
+  "Colombia"   = "#443A83FF",
+  "Costa Rica" = "#3B528BFF",
+  "Ecuador"    = "#31688EFF",
+  "El Salvador"= "#287C8EFF",
+  "Guatemala"  = "#21908CFF",
+  "Honduras"   = "#20A486FF",
+  "Panama"     = "#35B779FF",
+  "Paraguay"   = "#5DC863FF",
+  "Uruguay"    = "#8FD744FF",
+  "Venezuela"  = "#C7E020FF",
+  "Chile"      = "#FDE725FF"
+)) +
+  labs(
+    x = "Year",
+    y = "Gender gap (% of ♂ reseachers minus % of ♀ researchers)",
+    color = "Country"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.title = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"))
+
+# Opcional: convertir a gráfico interactivo
+fig <- ggplotly(p, width = 1000, height = 600) %>% 
+  layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5,
+      y = -0.2,
+      xanchor = "center",
+      title = list(text = "<b>Country</b>")
+    ),
+    margin = list(b = 100)
+  )
+
+# Agregamos callbacks para resaltar la línea sobre la que se hace hover
+fig <- onRender(fig, "
+function(el, x) {
+  el.on('plotly_hover', function(event) {
+    // Identifica la traza sobre la que se hace hover
+    var curveNumber = event.points[0].curveNumber;
+    // Itera sobre cada traza y ajusta su opacidad
+    x.data.forEach(function(trace, i) {
+      var newOpacity = (i === curveNumber) ? 1 : 0.3;
+      // Actualiza la traza 'i'
+      Plotly.restyle(el, 'opacity', newOpacity, [i]);
+    });
+  });
+  el.on('plotly_unhover', function(event) {
+    // Restaura la opacidad a 1 para todas las trazas
+    x.data.forEach(function(trace, i) {
+      Plotly.restyle(el, 'opacity', 1, [i]);
+    });
+  });
+}
+")
+
+fig
+```
+
+## <span style="color:#548893;">**Brechas en la Literatura**</span>
+
+::: {.incremental}
+
+-   **Necesidad de un enfoque relacional**  
+    -   La literatura sobre segregación de género, economía del prestigio y efecto Mateo muestra barreras persistentes para las académicas.  
+    -   Mayoría de estudios se centran en características individuales, invisibilizando cómo **lazos y estructuras de relación** configuran trayectorias y desigualdades.
+
+-   **Aportes de la perspectiva de redes**  
+    -   *Análisis de redes sociales* ofrece un lente para examinar las *arquitecturas invisibles* que sostienen la vida académica (Mitchell, 1969; Scott, 2017; Wellman, 1988).  
+    -   Pone el foco en **lazos de coautoría, posiciones en la red y mecanismos de influencia**, revelando cómo estos median acceso a recursos, prestigio e innovación (Wasserman & Faust, 1994; Barabási, 2016).
+    
+:::
+
+## <span style="color:#548893;">**Brechas en la Literatura**</span>
+
+::: {.incremental}
+
+-   **Research gap**  
+    -   Aunque se reconocen las **barreras de género en educación superior**, falta comprender cómo los **patrones relacionales** amplifican o reproducen estas desigualdades.
+    -   En lugar de enfocarnos en asociaciones entre variables, la perspectiva relacional centra el análisis en los **lazos y configuraciones de relación**.  
+    -   Esto permite comprender cómo las posiciones y conexiones dentro de las redes —más que atributos individuales— producen oportunidades, restricciones y desigualdades en la academia.
+    
+:::
+
+## <span style="color:#548893;">**Esta Investigación Doctoral (1/2):**</span>
+
+::: {.incremental}
+
+-   **Movilidad internacional de investigadores en educación de América Latina (estudio 1)**
+    -   ¿Cómo configuran las **redes de coautoría** los patrones de transición desde afiliaciones académicas en el Sur global hacia el Norte global?\
+    -   ¿Cuál es el rol del **género en los lazos de coautoría** y cómo influyen estos en los cambios de afiliación a lo largo del tiempo?
+-   **Redes de coautoría y homofilia de género en co-autorías de papers (estudio 2)**
+    -   ¿Hasta qué punto la **influencia social vs. la selección** explica la persistencia de la coautoría con sesgo de género?\
+    -   ¿Cómo influyen el **prestigio académico y las etapas de carrera** en los patrones de colaboración en la investigación educativa?\
+    -   ¿De qué manera la evolución de las **desventajas acumulativas** contribuye a la acumulación de prestigio con sesgo de género en la academia?
+    
+:::
+
+## <span style="color:#548893;">**Esta Investigación Doctoral (2/2):**</span>
+
+-   **Desigualdades de género en financiamiento y equipos FONDECYT en Chile (estudio 3)**
+    -   ¿Qué papel juegan la **homofilia de género, posiciones de intermediación y centralidad** en la formación y disolución de equipos de investigación dentro de proyectos *FONDECYT* en educación respecto a otras disciplinas?
+
+## <span style="color:#548893;">**Método**</span>
+
+::: {.incremental}
+
+- **Modelos de difusión en redes:** para estimar cambios en la afiliación institucional a lo largo del tiempo, conceptualizándolos como un proceso de difusión social entre colegas.  
+- **Modelos estocásticos orientado al actor (SAOM):** para analizar la evolución de las redes longitudinales de coautoría.  
+- **Modelos multinivel:** para examinar la probabilidad de poseer un proyecto FONDECYT en función del género, la edad académica y el prestigio institucional, entre otras covariables.
+
+:::
+
+## <span style="color:#548893;">**Datos**</span>
+
+::: {.incremental}
+
+- **Scopus:** obtenidos a través de la *Application Programming Interface* (API) de Scopus y procesados con el paquete *rscopus* en R (Muschelli, 2018).  
+    - Solo artículos publicados en revistas indexadas en Scopus clasificadas en *Educación* (2014–2024), con al menos un autor afiliado a una institución de América Latina.  
+- **ANID:** provienen de la Agencia Nacional de Investigación y Desarrollo (ANID) de Chile, que entrega datos de acceso abierto sobre investigadores, proyectos de investigación, instituciones, entre otros.
+
+:::
+
+# <span style="color:#548893;">**Resultados Preliminares (Estudio 3, Chile)**</span>
+
+## <span style="color:#548893;">**Brecha de Género en Liderazgo de Proyectos FONDECYT**</span>
+
+```{r}
+pacman::p_load(
+  tidyverse,
+  janitor,
+  vroom,
+  slider,
+  beepr)
+
+# 0. Read data -----------------------------------------------------------------
+proj_1982_2002 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_1982_2002.csv", delim = ",")
+proj_2003_2022 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_2003_2022.csv", delim = ",")
+proj_2023_2032 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_2023_2032.csv", delim = ",")
+
+# 1. Data prep -----------------------------------------------------------------
+proj_1982_2032 <- bind_rows(proj_1982_2002, proj_2003_2022, proj_2023_2032)
+rm(list = setdiff(ls(), c("proj_1982_2032", "appl_2016_20", "researchers", "milenio")))
+
+proj_1982_2032 <- clean_names(proj_1982_2032)
+
+proj_1982_2032 <- filter(proj_1982_2032, instrumento == "POSTDOCTORADO" | instrumento == "INICIACION" | instrumento == "REGULAR")
+
+proj_soc_sci <- proj_1982_2032 %>%
+  filter(str_detect(grupo_de_evaluacion, "EDUC INICIAL-ESCOLAR|EDUCACION|EDUCACION INICIAL-ESCOLAR|EDUCACION SUPERIOR|CS. ECONOM/ADMI|CS. JURIDICAS Y POL.|PSICOLOGIA|SICOLOGIA|SOCIOLOGIA|SOCIOLOGIA CS I|ANTROP. Y ARQUE|CIENCIAS JURIDICAS Y POLITICAS|ARQ.URB.GEOGR.Y AR|ARTES Y ARQUITECTURA|FILOSOFIA|GEOGRAFIA Y URBANISM|HISTORIA|LINGUISTICALITERATU"))
+
+proj_soc_sci <- proj_soc_sci %>%
+  mutate(grupo_de_evaluacion = case_when(
+    grupo_de_evaluacion == "CS. ECONOM/ADMI" ~ "Economics",
+    grupo_de_evaluacion == "CS. JURIDICAS Y POL." ~ "Law & Political Science",
+    grupo_de_evaluacion == "EDUC INICIAL-ESCOLAR" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION INICIAL-ESCOLAR" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION SUPERIOR" ~ "Education",
+    grupo_de_evaluacion == "PSICOLOGIA" ~ "Psychology",
+    grupo_de_evaluacion == "SICOLOGIA" ~ "Psychology",
+    grupo_de_evaluacion == "SOCIOLOGIA" ~ "Sociology",
+    grupo_de_evaluacion == "SOCIOLOGIA CS I" ~ "Sociology",
+    grupo_de_evaluacion == "ANTROP. Y ARQUE" ~ "Anthropology",
+    grupo_de_evaluacion == "ARQ.URB.GEOGR.Y AR" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "ARTES Y ARQUITECTURA" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "CIENCIAS JURIDICAS Y POLITICAS" ~ "Law & Political Science",
+    grupo_de_evaluacion == "FILOSOFIA" ~ "Philosophy",
+    grupo_de_evaluacion == "GEOGRAFIA Y URBANISM" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "HISTORIA" ~ "History",
+    grupo_de_evaluacion == "LINGUISTICALITERATU" ~ "Literature & Linguistics",
+    TRUE ~ grupo_de_evaluacion),
+    instrumento = case_when(
+      instrumento == "POSTDOCTORADO" ~ "FONDECYT Postdoctoral Fellowship",
+      instrumento == "INICIACION" ~ "FONDECYT Iniciación (Initiation Grant)",
+      instrumento == "REGULAR" ~ "FONDECYT Regular (Regular Grant)"
+    ),
+    sexo = case_when(
+      sexo == "HOMBRE" ~ "Male",
+      sexo == "MUJER" ~ "Female",
+      TRUE ~ sexo
+    )
+  )
+
+proj_soc_sci$instrumento <- factor(proj_soc_sci$instrumento,
+                                   labels = c("FONDECYT Postdoctoral Fellowship",
+                                              "FONDECYT Iniciación (Initiation Grant)",
+                                              "FONDECYT Regular (Regular Grant)"),
+                                   levels = c("FONDECYT Postdoctoral Fellowship",
+                                              "FONDECYT Iniciación (Initiation Grant)",
+                                              "FONDECYT Regular (Regular Grant)"),
+                                   ordered = T)
+
+data_gap <- filter(proj_soc_sci, grupo_de_evaluacion != "History" & grupo_de_evaluacion != "Arquitecture, Urbanism, Geography & Arts" & grupo_de_evaluacion != "Philosophy" & grupo_de_evaluacion != "Literature & Linguistics") %>%
+  group_by(agno_concurso, grupo_de_evaluacion, instrumento) %>%
+  summarise(
+    n_total = n(),
+    n_female = sum(sexo == "Female", na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    female_percentage = (n_female / n_total) * 100,
+    gender_gap = 100 - 2 * female_percentage
+  )
+
+data_gap_ma <- data_gap %>%
+  group_by(grupo_de_evaluacion, instrumento) %>% 
+  arrange(agno_concurso) %>%
+  mutate(
+    # Calcula la media de gender_gap en ventanas de 5 observaciones hacia atrás
+    gender_gap_5yr = slide_dbl(gender_gap, mean, .before = 4, .complete = TRUE),
+    gender_gap_5yr = round(gender_gap_5yr, 1)
+  ) %>%
+  ungroup()
+
+# Gráfico: una línea para cada disciplina (grupo_de_evaluacion)
+p <- data_gap_ma %>%
+  ggplot(aes(x = agno_concurso, y = gender_gap_5yr, color = grupo_de_evaluacion)) +
+  geom_line(linewidth = 1) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dotted", size = 1) +
+  facet_wrap(~ instrumento) +
+  scale_x_continuous(
+    breaks = c(seq(1986, 2021, by = 6), 2023),
+    limits = c(1986, 2023)
+  ) +
+  scale_y_continuous(
+    labels = function(x) paste0(x, "%"),
+    breaks = seq(-100, 100, 25),
+    limits = c(-100, 100)
+  ) +
+  scale_color_manual(values = c(
+    "Anthropology"                       = "#440154FF",
+    "Arquitecture, Urbanism, Geography & Arts" = "#482878FF",
+    "Economics"                          = "#3E4A89FF",
+    "History"                            = "#31688EFF",
+    "Law & Political Science"            = "#26828EFF",
+    "Literature & Linguistics"           = "#1F9E89FF",
+    "Philosophy"                         = "#35B779FF",
+    "Psychology"                         = "#6DCD59FF",
+    "Sociology"                          = "#B4DE2CFF",
+    "Education"                          = "#FDE725FF"
+  )) +
+  labs(
+    x = "Year",
+    y = "Gender gap (% of ♂ PI reseacher minus % of ♀ researcher)",
+    color = "Discipline"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+
+p
+
+fig <- ggplotly(p, width = 1000, height = 600) %>% 
+  layout(
+    legend = list(
+      orientation = "h",
+      x = 0.5,
+      y = -0.2,
+      xanchor = "center",
+      title = list(text = "<b>Discipline</b>")
+    ),
+    margin = list(b = 100)
+  )
+
+# Example hover callback: highlight hovered trace
+fig <- onRender(fig, "
+function(el, x) {
+  el.on('plotly_hover', function(event) {
+    var curveNumber = event.points[0].curveNumber;
+    x.data.forEach(function(trace, i) {
+      var newOpacity = (i === curveNumber) ? 1 : 0.3;
+      Plotly.restyle(el, 'opacity', newOpacity, [i]);
+    });
+  });
+  el.on('plotly_unhover', function(event) {
+    x.data.forEach(function(trace, i) {
+      Plotly.restyle(el, 'opacity', 1, [i]);
+    });
+  });
+}
+")
+
+fig
+```
+
+## <span style="color:#548893;">**Red de Equipos FONDECYT en Educación (2016-2023)**</span>
+
+```{r}
+if(!require(pacman))install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  janitor,
+  vroom,
+  slider,
+  purrr,
+  igraph,
+  stringi,
+  beepr)
+
+setwd("G:/Mi unidad/DPhil/Thesis")
+
+# 0. Read data -----------------------------------------------------------------
+proj_1982_2002 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_1982_2002.csv", delim = ",")
+proj_2003_2022 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_2003_2022.csv", delim = ",")
+proj_2023_2032 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_2023_2032.csv", delim = ",")
+researchers <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/SPI_INVESTIGADORES.csv", delim = ";")
+
+#appl_2016_20 <- vroom(file = "input/data/original/anid/POSTULACIONES_2016_2020.csv", delim = ";")
+#milenio <- vroom(file = "input/data/original/anid/BDH_PROYECTOS_MILENIO.csv", delim = ";")
+
+# 1. Data prep -----------------------------------------------------------------
+proj_1982_2032 <- bind_rows(proj_1982_2002, proj_2003_2022, proj_2023_2032)
+rm(list = setdiff(ls(), c("proj_1982_2032", "appl_2016_20", "researchers", "milenio")))
+
+proj_1982_2032 <- clean_names(proj_1982_2032)
+#appl_2016_20 <- clean_names(appl_2016_20)
+researchers <- clean_names(researchers)
+#milenio <- clean_names(milenio)
+
+proj_1982_2032 <- filter(proj_1982_2032, instrumento == "POSTDOCTORADO" | instrumento == "INICIACION" |
+                           instrumento == "REGULAR")
+
+proj_soc_sci <- proj_1982_2032 %>%
+  filter(str_detect(grupo_de_evaluacion, "EDUC INICIAL-ESCOLAR|EDUCACION|EDUCACION INICIAL-ESCOLAR|EDUCACION SUPERIOR|CS. ECONOM/ADMI|CS. JURIDICAS Y POL.|PSICOLOGIA|SICOLOGIA|SOCIOLOGIA|SOCIOLOGIA CS I|ANTROP. Y ARQUE|CIENCIAS JURIDICAS Y POLITICAS|ARQ.URB.GEOGR.Y AR|ARTES Y ARQUITECTURA|FILOSOFIA|GEOGRAFIA Y URBANISM|HISTORIA|LINGUISTICALITERATU"))
+
+proj_soc_sci <- proj_soc_sci %>%
+  mutate(grupo_de_evaluacion = case_when(
+    grupo_de_evaluacion == "CS. ECONOM/ADMI" ~ "Economics",
+    grupo_de_evaluacion == "CS. JURIDICAS Y POL." ~ "Law & Political Science",
+    grupo_de_evaluacion == "EDUC INICIAL-ESCOLAR" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION INICIAL-ESCOLAR" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION SUPERIOR" ~ "Education",
+    grupo_de_evaluacion == "PSICOLOGIA" ~ "Psychology",
+    grupo_de_evaluacion == "SICOLOGIA" ~ "Psychology",
+    grupo_de_evaluacion == "SOCIOLOGIA" ~ "Sociology",
+    grupo_de_evaluacion == "SOCIOLOGIA CS I" ~ "Sociology",
+    grupo_de_evaluacion == "ANTROP. Y ARQUE" ~ "Anthropology",
+    grupo_de_evaluacion == "ARQ.URB.GEOGR.Y AR" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "ARTES Y ARQUITECTURA" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "CIENCIAS JURIDICAS Y POLITICAS" ~ "Law & Political Science",
+    grupo_de_evaluacion == "FILOSOFIA" ~ "Philosophy",
+    grupo_de_evaluacion == "GEOGRAFIA Y URBANISM" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "HISTORIA" ~ "History",
+    grupo_de_evaluacion == "LINGUISTICALITERATU" ~ "Literature & Linguistics",
+    TRUE ~ grupo_de_evaluacion),
+    instrumento = case_when(
+      instrumento == "POSTDOCTORADO" ~ "FONDECYT Postdoctoral Fellowship",
+      instrumento == "INICIACION" ~ "FONDECYT Iniciación (Initiation Grant)",
+      instrumento == "REGULAR" ~ "FONDECYT Regular (Regular Grant)"
+    ),
+    sexo = case_when(
+      sexo == "HOMBRE" ~ "Male",
+      sexo == "MUJER" ~ "Female",
+      TRUE ~ sexo
+    )
+    )
+
+proj_soc_sci$instrumento <- factor(proj_soc_sci$instrumento,
+                                   labels = c("FONDECYT Postdoctoral Fellowship",
+                                              "FONDECYT Iniciación (Initiation Grant)",
+                                              "FONDECYT Regular (Regular Grant)"),
+                                   levels = c("FONDECYT Postdoctoral Fellowship",
+                                              "FONDECYT Iniciación (Initiation Grant)",
+                                              "FONDECYT Regular (Regular Grant)"),
+                                   ordered = T)
+
+
+# Network data
+researchers <- select(researchers, codigo_proyecto = "folio", nombreinvequipo, rolinvequipo, sexoinvequipo)
+proj_educ <- filter(proj_soc_sci, grupo_de_evaluacion == "Education")
+proj_educ$codigo_proyecto <- as.numeric(proj_educ$codigo_proyecto)
+researchers <- left_join(researchers, proj_educ, by = "codigo_proyecto")
+
+researchers_ed <- filter(researchers, grupo_de_evaluacion == "Education")
+researchers_ed <- select(researchers_ed, codigo_proyecto, nombreinvequipo, rolinvequipo, sexoinvequipo)
+
+researchers_ed <- researchers_ed %>%
+  mutate(
+    rolinvequipo = case_when(
+      rolinvequipo == "Investigador(a) Responsable" ~ "Principal Investigator",
+      rolinvequipo == "Coinvestigador(a)" ~ "Co-Investigator",
+      TRUE ~ rolinvequipo
+    ),
+    sexoinvequipo = case_when(
+      sexoinvequipo == "Mujer" ~ "Female",
+      sexoinvequipo == "Hombre" ~ "Male",
+      str_detect(nombreinvequipo, "Jesús|David|Rodrigo|Pablo|daniel quilaqueo|Patricio|Juan Paulo") ~ "Male",
+      TRUE ~ "Female"
+    )
+  )
+
+researchers_ed <- researchers_ed %>%
+  mutate(nombreinvequipo = trimws(nombreinvequipo)) %>%  # Elimina espacios extra, si los hay
+  distinct(nombreinvequipo, .keep_all = TRUE) %>%  # Se asegura de tener cada nombre una sola vez
+  rename(
+    name = nombreinvequipo,
+    role = rolinvequipo,
+    sex  = sexoinvequipo
+  )
+
+# Función para extraer el primer nombre y el primer apellido,
+# eliminar espacios extra, quitar acentos y pasar a mayúsculas.
+extract_name_surname <- function(full_name) {
+  # Elimina espacios extra
+  full_name <- str_squish(full_name)
+  # Separa el nombre en tokens (palabras)
+  tokens <- str_split(full_name, " ")[[1]]
+  n <- length(tokens)
+  
+  if(n >= 4) {
+    # Suponemos: primer nombre, segundo nombre, primer apellido, segundo apellido, …
+    result <- paste(tokens[1], tokens[3])
+  } else if(n >= 2) {
+    # Si tiene 2 o 3 palabras, tomamos el primer y segundo token
+    result <- paste(tokens[1], tokens[2])
+  } else {
+    result <- tokens[1]
+  }
+  
+  # Elimina acentos (tildes)
+  result <- stri_trans_general(result, "Latin-ASCII")
+  # Pasa a mayúsculas
+  result <- toupper(result)
+  
+  return(result)
+}
+
+# Aplicamos la función a la columna de nombres en el data frame vertices
+researchers_ed <- researchers_ed %>%
+  mutate(
+    name = str_squish(name),  # quita espacios extra
+    name = sapply(name, extract_name_surname)
+  )
+
+researchers_ed <- researchers_ed %>%
+  distinct(name, codigo_proyecto, .keep_all = TRUE)
+
+edge_list <- select(researchers_ed, name, codigo_proyecto)
+
+edge_list <- edge_list %>%
+  distinct(codigo_proyecto, name) %>%
+  # Agrupar por proyecto y recolectar en una lista
+  group_by(codigo_proyecto) %>%
+  summarise(investigadores = list(name), .groups = "drop") %>%
+  # Para cada proyecto, crear las parejas de investigadores
+  mutate(edges = map(investigadores, ~ {
+    inv <- .x
+    
+    # Si solo hay 1 investigador, lo marcamos como aislado (target = NA)
+    if (length(inv) == 1) {
+      tibble(source = inv, target = NA_character_)
+    } else {
+      # Generar todas las combinaciones 2 a 2
+      comb <- combn(inv, 2, simplify = FALSE)
+      map_dfr(comb, ~ tibble(source = .x[1], target = .x[2]))
+    }
+  })) %>%
+  unnest(cols = edges)
+
+edge_list <- select(edge_list, everything(), -c(investigadores, codigo_proyecto))
+
+edge_list_no_na <- edge_list %>%
+  filter(!is.na(source) & !is.na(target)) %>%
+  distinct(source, target)  # Elimina duplicados, por si acaso
+
+researchers_ed <- select(researchers_ed, name, role, sex) %>%
+  distinct(name, .keep_all = T)
+
+g <- graph_from_data_frame(
+  d = edge_list_no_na,
+  vertices = researchers_ed,
+  directed = FALSE
+)
+
+V(g)$color <- ifelse(V(g)$sex == "Female", "#440154FF", "#5DC863FF")
+
+# Calculamos el layout para la red (puedes elegir otro, como layout_nicely(g))
+L <- layout_with_fr(g)
+Xn <- L[, 1]
+Yn <- L[, 2]
+
+# Extraemos la información de los nodos
+node_labels <- V(g)$name  # Puedes incluir otros atributos si lo deseas
+node_colors <- V(g)$color
+
+# Extraemos los enlaces (usando nombres=FALSE para obtener los índices numéricos)
+edges <- as.data.frame(get.edgelist(g, names = FALSE))
+Ne <- nrow(edges)
+
+# Creamos una lista de "shapes" para cada enlace
+edge_shapes <- list()
+for (i in 1:Ne) {
+  v0 <- edges[i, 1]
+  v1 <- edges[i, 2]
+  
+  edge_shape <- list(
+    type = "line",
+    line = list(color = "#030303", width = 0.3),
+    x0 = Xn[v0],
+    y0 = Yn[v0],
+    x1 = Xn[v1],
+    y1 = Yn[v1]
+  )
+  
+  edge_shapes[[i]] <- edge_shape
+}
+
+# Creamos el gráfico interactivo
+p <- plot_ly(x = ~Xn, 
+             y = ~Yn, 
+             mode = "markers", 
+             type = "scatter",
+             marker = list(color = node_colors, size = 8),
+             text = node_labels,
+             hoverinfo = "text",
+             width = 1000,
+             height = 600) %>%
+  layout(shapes = edge_shapes,
+         xaxis = list(title = "", showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(title = "", showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+p
+```
+
+## <span style="color:#548893;">**¡Gracias!**</span>
+
+Matías Montero\
+📧 matias.montero\@education.ox.ac.uk
+
+Apoyo del Economic and Social Research Council (ESRC) \[grant number ES/Y001761/1\] a través del Grand Union Doctoral Training Partnership (GUDTP) y el UK Research and Innovation (UKRI) es gratamente reconocido.
+
+![](ukri-esrc-square-logo.png){width="120" height="100"}
