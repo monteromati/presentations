@@ -11,8 +11,8 @@ author:
     affiliations: 
       - Department of Education, University of Oxford
       - CIAE, Instituto de Estudios Avanzados en Educación (IE), Universidad de Chile
-date: "August 27, 2025"
-footer: "Seminarios Internos del IE y CIAE"
+date: "October 7, 2025"
+footer: "Workshop on Inequality and Stratification Research 2025 (ISUC-PUC)"
 logo: "images/logo.png"
 ---
 
@@ -181,7 +181,7 @@ fig
     -   Mayoría de estudios se centran en características individuales, invisibilizando cómo **lazos y estructuras de relación** configuran trayectorias y desigualdades.
 
 -   **Aportes de la perspectiva de redes**  
-    -   *Análisis de redes sociales* ofrece un lente para examinar las *arquitecturas invisibles* que sostienen la vida académica (Mitchell, 1969; Scott, 2017; Wellman, 1988).  
+    -   *Análisis de redes sociales* ofrece un lente para examinar los *lazos* que sostienen la vida académica (Mitchell, 1969; Scott, 2017; Wellman, 1988).  
     -   Pone el foco en **lazos de coautoría, posiciones en la red y mecanismos de influencia**, revelando cómo estos median acceso a recursos, prestigio e innovación (Wasserman & Faust, 1994; Barabási, 2016).
     
 :::
@@ -193,7 +193,7 @@ fig
 -   **Research gap**  
     -   Aunque se reconocen las **barreras de género en educación superior**, falta comprender cómo los **patrones relacionales** amplifican o reproducen estas desigualdades.
     -   En lugar de enfocarnos en asociaciones entre variables, la perspectiva relacional centra el análisis en los **lazos y configuraciones de relación**.  
-    -   Esto permite comprender cómo las posiciones y conexiones dentro de las redes —más que atributos individuales— producen oportunidades, restricciones y desigualdades en la academia.
+    -   Esto permite comprender cómo las posiciones y conexiones dentro de las redes, más que atributos individuales, producen oportunidades, restricciones y desigualdades en la academia.
     
 :::
 
@@ -205,9 +205,8 @@ fig
     -   ¿Cómo configuran las **redes de coautoría** los patrones de transición desde afiliaciones académicas en el Sur global hacia el Norte global?\
     -   ¿Cuál es el rol del **género en los lazos de coautoría** y cómo influyen estos en los cambios de afiliación a lo largo del tiempo?
 -   **Redes de coautoría y homofilia de género en co-autorías de papers (estudio 2)**
-    -   ¿Hasta qué punto la **influencia social vs. la selección** explica la persistencia de la coautoría con sesgo de género?\
     -   ¿Cómo influyen el **prestigio académico y las etapas de carrera** en los patrones de colaboración en la investigación educativa?\
-    -   ¿De qué manera la evolución de las **desventajas acumulativas** contribuye a la acumulación de prestigio con sesgo de género en la academia?
+    -   ¿De qué manera la evolución de **desventajas acumulativas** contribuye a la acumulación de prestigio, en términos de co-autorías, con sesgo de género en la academia?
     
 :::
 
@@ -222,7 +221,7 @@ fig
 
 - **Modelos de difusión en redes:** para estimar cambios en la afiliación institucional a lo largo del tiempo, conceptualizándolos como un proceso de difusión social entre colegas.  
 - **Modelos estocásticos orientado al actor (SAOM):** para analizar la evolución de las redes longitudinales de coautoría.  
-- **Modelos multinivel:** para examinar la probabilidad de poseer un proyecto FONDECYT en función del género, la edad académica y el prestigio institucional, entre otras covariables.
+- **Modelos multinivel:** para examinar la probabilidad de adjudicar un proyecto FONDECYT en función del género, la edad académica y el prestigio institucional, entre otras covariables.
 
 :::
 
@@ -231,7 +230,7 @@ fig
 ::: {.incremental}
 
 - **Scopus:** obtenidos a través de la *Application Programming Interface* (API) de Scopus y procesados con el paquete *rscopus* en R (Muschelli, 2018).  
-    - Solo artículos publicados en revistas indexadas en Scopus clasificadas en *Educación* (2014–2024), con al menos un autor afiliado a una institución de América Latina.  
+    - Solo artículos publicados en revistas indexadas en Scopus clasificadas en *Educación* (2014-2024), con al menos un autor afiliado a una institución de América Latina.  
 - **ANID:** provienen de la Agencia Nacional de Investigación y Desarrollo (ANID) de Chile, que entrega datos de acceso abierto sobre investigadores, proyectos de investigación, instituciones, entre otros.
 
 :::
@@ -415,6 +414,7 @@ pacman::p_load(
   purrr,
   igraph,
   stringi,
+  plotly,
   beepr)
 
 setwd("G:/Mi unidad/DPhil/Thesis")
@@ -488,7 +488,7 @@ proj_soc_sci$instrumento <- factor(proj_soc_sci$instrumento,
 
 # Network data
 researchers <- select(researchers, codigo_proyecto = "folio", nombreinvequipo, rolinvequipo, sexoinvequipo)
-proj_educ <- filter(proj_soc_sci, grupo_de_evaluacion == "Education")
+proj_educ <- filter(proj_soc_sci, grupo_de_evaluacion == "Education" & instrumento == "FONDECYT Regular (Regular Grant)")
 proj_educ$codigo_proyecto <- as.numeric(proj_educ$codigo_proyecto)
 researchers <- left_join(researchers, proj_educ, by = "codigo_proyecto")
 
@@ -498,13 +498,256 @@ researchers_ed <- select(researchers_ed, codigo_proyecto, nombreinvequipo, rolin
 researchers_ed <- researchers_ed %>%
   mutate(
     rolinvequipo = case_when(
-      rolinvequipo == "Investigador(a) Responsable" ~ "Principal Investigator",
-      rolinvequipo == "Coinvestigador(a)" ~ "Co-Investigator",
+      rolinvequipo == "INVESTIGADOR(A) RESPONSABLE" ~ "Principal Investigator",
+      rolinvequipo == "INVESTIGADOR(A) PATROCINANTE" ~ "Faculty Sponsor",
+      rolinvequipo == "COINVESTIGADOR(A)" ~ "Co-Investigator",
       TRUE ~ rolinvequipo
     ),
     sexoinvequipo = case_when(
-      sexoinvequipo == "Mujer" ~ "Female",
-      sexoinvequipo == "Hombre" ~ "Male",
+      sexoinvequipo == "MUJER" ~ "Female",
+      sexoinvequipo == "HOMBRE" ~ "Male",
+      str_detect(nombreinvequipo, "Jesús|David|Rodrigo|Pablo|daniel quilaqueo|Patricio|Juan Paulo") ~ "Male",
+      TRUE ~ "Female"
+    )
+  )
+
+researchers_ed <- researchers_ed %>%
+  mutate(nombreinvequipo = trimws(nombreinvequipo)) %>%  # Elimina espacios extra, si los hay
+  distinct(nombreinvequipo, .keep_all = TRUE) %>%  # Se asegura de tener cada nombre una sola vez
+  rename(
+    name = nombreinvequipo,
+    role = rolinvequipo,
+    sex  = sexoinvequipo
+  )
+
+# Función para extraer el primer nombre y el primer apellido,
+# eliminar espacios extra, quitar acentos y pasar a mayúsculas.
+extract_name_surname <- function(full_name) {
+  # Elimina espacios extra
+  full_name <- str_squish(full_name)
+  # Separa el nombre en tokens (palabras)
+  tokens <- str_split(full_name, " ")[[1]]
+  n <- length(tokens)
+  
+  if(n >= 4) {
+    # Suponemos: primer nombre, segundo nombre, primer apellido, segundo apellido, …
+    result <- paste(tokens[1], tokens[3])
+  } else if(n >= 2) {
+    # Si tiene 2 o 3 palabras, tomamos el primer y segundo token
+    result <- paste(tokens[1], tokens[2])
+  } else {
+    result <- tokens[1]
+  }
+  
+  # Elimina acentos (tildes)
+  result <- stri_trans_general(result, "Latin-ASCII")
+  # Pasa a mayúsculas
+  result <- toupper(result)
+  
+  return(result)
+}
+
+# Aplicamos la función a la columna de nombres en el data frame vertices
+researchers_ed <- researchers_ed %>%
+  mutate(
+    name = str_squish(name),  # quita espacios extra
+    name = sapply(name, extract_name_surname)
+  )
+
+researchers_ed <- researchers_ed %>%
+  distinct(name, codigo_proyecto, .keep_all = TRUE)
+
+edge_list <- select(researchers_ed, name, codigo_proyecto)
+
+edge_list <- edge_list %>%
+  distinct(codigo_proyecto, name) %>%
+  # Agrupar por proyecto y recolectar en una lista
+  group_by(codigo_proyecto) %>%
+  summarise(investigadores = list(name), .groups = "drop") %>%
+  # Para cada proyecto, crear las parejas de investigadores
+  mutate(edges = map(investigadores, ~ {
+    inv <- .x
+    
+    # Si solo hay 1 investigador, lo marcamos como aislado (target = NA)
+    if (length(inv) == 1) {
+      tibble(source = inv, target = NA_character_)
+    } else {
+      # Generar todas las combinaciones 2 a 2
+      comb <- combn(inv, 2, simplify = FALSE)
+      map_dfr(comb, ~ tibble(source = .x[1], target = .x[2]))
+    }
+  })) %>%
+  unnest(cols = edges)
+
+edge_list <- select(edge_list, everything(), -c(investigadores, codigo_proyecto))
+
+edge_list_no_na <- edge_list %>%
+  filter(!is.na(source) & !is.na(target)) %>%
+  distinct(source, target)  # Elimina duplicados, por si acaso
+
+researchers_ed <- select(researchers_ed, name, role, sex) %>%
+  distinct(name, .keep_all = T)
+
+g <- graph_from_data_frame(
+  d = edge_list_no_na,
+  vertices = researchers_ed,
+  directed = FALSE
+)
+
+V(g)$color <- ifelse(V(g)$sex == "Female", "#440154FF", "#5DC863FF")
+
+# Calculamos el layout para la red (puedes elegir otro, como layout_nicely(g))
+L <- layout_with_fr(g)
+Xn <- L[, 1]
+Yn <- L[, 2]
+
+# Extraemos la información de los nodos
+node_labels <- V(g)$name  # Puedes incluir otros atributos si lo deseas
+node_colors <- V(g)$color
+
+# Extraemos los enlaces (usando nombres=FALSE para obtener los índices numéricos)
+edges <- as.data.frame(get.edgelist(g, names = FALSE))
+Ne <- nrow(edges)
+
+# Creamos una lista de "shapes" para cada enlace
+edge_shapes <- list()
+for (i in 1:Ne) {
+  v0 <- edges[i, 1]
+  v1 <- edges[i, 2]
+  
+  edge_shape <- list(
+    type = "line",
+    line = list(color = "#030303", width = 0.3),
+    x0 = Xn[v0],
+    y0 = Yn[v0],
+    x1 = Xn[v1],
+    y1 = Yn[v1]
+  )
+  
+  edge_shapes[[i]] <- edge_shape
+}
+
+# Creamos el gráfico interactivo
+p <- plot_ly(x = ~Xn, 
+             y = ~Yn, 
+             mode = "markers", 
+             type = "scatter",
+             marker = list(color = node_colors, size = 8),
+             text = node_labels,
+             hoverinfo = "text",
+             width = 1000,
+             height = 600) %>%
+  layout(shapes = edge_shapes,
+         xaxis = list(title = "", showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(title = "", showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+p
+```
+
+## <span style="color:#548893;">**Red de Equipos FONDECYT en Sociología (2016-2023)**</span>
+
+```{r}
+if(!require(pacman))install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  janitor,
+  vroom,
+  slider,
+  purrr,
+  igraph,
+  stringi,
+  plotly,
+  beepr)
+
+setwd("G:/Mi unidad/DPhil/Thesis")
+
+# 0. Read data -----------------------------------------------------------------
+proj_1982_2002 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_1982_2002.csv", delim = ",")
+proj_2003_2022 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_2003_2022.csv", delim = ",")
+proj_2023_2032 <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/BDH_PROYECTOS_2023_2032.csv", delim = ",")
+researchers <- vroom(file = "G:/Mi unidad/DPhil/Thesis/input/data/original/anid/SPI_INVESTIGADORES.csv", delim = ";")
+
+#appl_2016_20 <- vroom(file = "input/data/original/anid/POSTULACIONES_2016_2020.csv", delim = ";")
+#milenio <- vroom(file = "input/data/original/anid/BDH_PROYECTOS_MILENIO.csv", delim = ";")
+
+# 1. Data prep -----------------------------------------------------------------
+proj_1982_2032 <- bind_rows(proj_1982_2002, proj_2003_2022, proj_2023_2032)
+rm(list = setdiff(ls(), c("proj_1982_2032", "appl_2016_20", "researchers", "milenio")))
+
+proj_1982_2032 <- clean_names(proj_1982_2032)
+#appl_2016_20 <- clean_names(appl_2016_20)
+researchers <- clean_names(researchers)
+#milenio <- clean_names(milenio)
+
+proj_1982_2032 <- filter(proj_1982_2032, instrumento == "POSTDOCTORADO" | instrumento == "INICIACION" |
+                           instrumento == "REGULAR")
+
+proj_soc_sci <- proj_1982_2032 %>%
+  filter(str_detect(grupo_de_evaluacion, "EDUC INICIAL-ESCOLAR|EDUCACION|EDUCACION INICIAL-ESCOLAR|EDUCACION SUPERIOR|CS. ECONOM/ADMI|CS. JURIDICAS Y POL.|PSICOLOGIA|SICOLOGIA|SOCIOLOGIA|SOCIOLOGIA CS I|ANTROP. Y ARQUE|CIENCIAS JURIDICAS Y POLITICAS|ARQ.URB.GEOGR.Y AR|ARTES Y ARQUITECTURA|FILOSOFIA|GEOGRAFIA Y URBANISM|HISTORIA|LINGUISTICALITERATU"))
+
+proj_soc_sci <- proj_soc_sci %>%
+  mutate(grupo_de_evaluacion = case_when(
+    grupo_de_evaluacion == "CS. ECONOM/ADMI" ~ "Economics",
+    grupo_de_evaluacion == "CS. JURIDICAS Y POL." ~ "Law & Political Science",
+    grupo_de_evaluacion == "EDUC INICIAL-ESCOLAR" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION INICIAL-ESCOLAR" ~ "Education",
+    grupo_de_evaluacion == "EDUCACION SUPERIOR" ~ "Education",
+    grupo_de_evaluacion == "PSICOLOGIA" ~ "Psychology",
+    grupo_de_evaluacion == "SICOLOGIA" ~ "Psychology",
+    grupo_de_evaluacion == "SOCIOLOGIA" ~ "Sociology",
+    grupo_de_evaluacion == "SOCIOLOGIA CS I" ~ "Sociology",
+    grupo_de_evaluacion == "ANTROP. Y ARQUE" ~ "Anthropology",
+    grupo_de_evaluacion == "ARQ.URB.GEOGR.Y AR" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "ARTES Y ARQUITECTURA" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "CIENCIAS JURIDICAS Y POLITICAS" ~ "Law & Political Science",
+    grupo_de_evaluacion == "FILOSOFIA" ~ "Philosophy",
+    grupo_de_evaluacion == "GEOGRAFIA Y URBANISM" ~ "Arquitecture, Urbanism, Geography & Arts",
+    grupo_de_evaluacion == "HISTORIA" ~ "History",
+    grupo_de_evaluacion == "LINGUISTICALITERATU" ~ "Literature & Linguistics",
+    TRUE ~ grupo_de_evaluacion),
+    instrumento = case_when(
+      instrumento == "POSTDOCTORADO" ~ "FONDECYT Postdoctoral Fellowship",
+      instrumento == "INICIACION" ~ "FONDECYT Iniciación (Initiation Grant)",
+      instrumento == "REGULAR" ~ "FONDECYT Regular (Regular Grant)"
+    ),
+    sexo = case_when(
+      sexo == "HOMBRE" ~ "Male",
+      sexo == "MUJER" ~ "Female",
+      TRUE ~ sexo
+    )
+    )
+
+proj_soc_sci$instrumento <- factor(proj_soc_sci$instrumento,
+                                   labels = c("FONDECYT Postdoctoral Fellowship",
+                                              "FONDECYT Iniciación (Initiation Grant)",
+                                              "FONDECYT Regular (Regular Grant)"),
+                                   levels = c("FONDECYT Postdoctoral Fellowship",
+                                              "FONDECYT Iniciación (Initiation Grant)",
+                                              "FONDECYT Regular (Regular Grant)"),
+                                   ordered = T)
+
+
+# Network data
+researchers <- select(researchers, codigo_proyecto = "folio", nombreinvequipo, rolinvequipo, sexoinvequipo)
+proj_educ <- filter(proj_soc_sci, grupo_de_evaluacion == "Sociology" & instrumento == "FONDECYT Regular (Regular Grant)")
+proj_educ$codigo_proyecto <- as.numeric(proj_educ$codigo_proyecto)
+researchers <- left_join(researchers, proj_educ, by = "codigo_proyecto")
+
+researchers_ed <- filter(researchers, grupo_de_evaluacion == "Sociology")
+researchers_ed <- select(researchers_ed, codigo_proyecto, nombreinvequipo, rolinvequipo, sexoinvequipo)
+
+researchers_ed <- researchers_ed %>%
+  mutate(
+    rolinvequipo = case_when(
+      rolinvequipo == "INVESTIGADOR(A) RESPONSABLE" ~ "Principal Investigator",
+      rolinvequipo == "INVESTIGADOR(A) PATROCINANTE" ~ "Faculty Sponsor",
+      rolinvequipo == "COINVESTIGADOR(A)" ~ "Co-Investigator",
+      TRUE ~ rolinvequipo
+    ),
+    sexoinvequipo = case_when(
+      sexoinvequipo == "MUJER" ~ "Female",
+      sexoinvequipo == "HOMBRE" ~ "Male",
       str_detect(nombreinvequipo, "Jesús|David|Rodrigo|Pablo|daniel quilaqueo|Patricio|Juan Paulo") ~ "Male",
       TRUE ~ "Female"
     )
