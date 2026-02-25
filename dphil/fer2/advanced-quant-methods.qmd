@@ -1,0 +1,205 @@
+---
+title: <span style="color:#548893;">**Advanced Quantitative Methods Clinic (Dissertation-focused)**</span>
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: false
+    preview-links: auto
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+author:
+  - name: "Matias Montero"
+  - name: "Henry Tsz Fung Lo"
+date: "4 March 2026"
+footer: "Advanced Quantitative Methods (Dissertation clinic)"
+logo: "images/logo.png"
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## [**Why this session?**]{style="color:#548893;"}
+
+::: incremental
+-   This is a dissertation-focused "clinic" for students planning to use
+    quantitative methods.
+-   We will *revisit and deepen* key topics from the Intro-Intermediate
+    sequence.
+-   We will then workshop dissertation-specific questions in small
+    groups.
+:::
+
+::: incremental
+-   Goal: help you make defensible design and analysis choices, and help
+    you diagnose issues you are already encountering.
+:::
+
+## [**What this session is (and is not)**]{style="color:#548893;"}
+
+::: incremental
+-   **Is:** targeted recap + Q&A + applied troubleshooting for your
+    dissertation.
+-   **Is:** a space to pressure-test assumptions and analysis plans.
+-   **Is not:** teaching an entirely new advanced method from scratch.
+:::
+
+::: incremental
+-   If you are already exploring a more advanced method, we can discuss
+    it in small groups to the extent that you have begun to work with
+    it.
+:::
+
+## [**Plan for today**]{style="color:#548893;"}
+
+::: incremental
+1.  Short recap of high-leverage topics (decision points for
+    dissertation work)
+2.  Open Q&A on those topics
+3.  Breakouts: dissertation-specific workshops (small groups)
+4.  Wrap-up: common patterns, next steps, resources
+:::
+
+## [**Recap: checkpoints that matter**]{style="color:#548893;"}
+
+::: incremental
+We will focus on a small number of "checkpoints" that repeatedly drive
+dissertation outcomes:
+
+-   Research question
+
+-   Identification
+
+-   Model choice aligned with outcome type and data structure
+
+-   Handling clustering and dependence
+
+-   Missing data and sensitivity
+
+-   Diagnostics, robustness, and transparent reporting
+:::
+
+## [**Checkpoint 1: Your research question**]{style="color:#548893;"}
+
+::: incremental
+-   What is your target quantity? (difference in means, marginal effect,
+    causal effect, association, prediction)
+-   What is your unit of analysis?
+-   What is the counterfactual or comparison you rely on (if causal)?
+-   What assumptions would need to be true for your interpretation?
+:::
+
+## [**Checkpoint 2: Identification and threats**]{style="color:#548893;"}
+
+::: incremental
+-   Confounding and selection: what variables must be accounted for (and
+    what should *not* be controlled)?
+-   Reverse causality and simultaneity
+-   Measurement error and construct validity
+:::
+
+## [**Checkpoint 3: Model choice and data structure**]{style="color:#548893;"}
+
+::: incremental
+-   Outcome type: continuous, binary, ordinal, count, time-to-event
+-   Dependence: clustering, repeated measures, networks
+-   Functional form: non-linearity, interactions
+-   Interpretation: coefficients vs marginal effects vs predicted values
+:::
+
+## [**Checkpoint 4: Missing data**]{style="color:#548893;"}
+
+::: incremental
+-   What is missing, for whom, and why?
+-   Plausible mechanism: MCAR, MAR, MNAR (what would make each
+    plausible?)
+-   Strategy: complete-case, multiple imputation, model-based approaches
+-   Minimum: report missingness patterns and do a sensitivity check
+:::
+
+## [**Checkpoint 5: Diagnostics and robustness**]{style="color:#548893;"}
+
+::: incremental
+-   Model fit and residual diagnostics (where applicable)
+-   Influence/leverage and outliers
+-   Alternative specifications that matter (not "specification fishing")
+-   Pre-analysis logic: what would change your conclusion?
+:::
+
+## [**Checkpoint 6: Reporting and write-up**]{style="color:#548893;"}
+
+::: incremental
+-   Clear link: question -\> design -\> assumptions -\> estimation -\>
+    interpretation
+-   Tables/figures that answer the question (not just what the software
+    outputs)
+-   What to put in main text vs appendix
+-   Reproducibility (open science framework): code, data, and
+    transparent decisions
+:::
+
+## [**Q&A: how we will run it**]{style="color:#548893;"}
+
+::: incremental
+-   We will start with questions on the recap checkpoints.
+-   If a question is highly dissertation-specific, we may park it for
+    breakouts.
+:::
+
+## [**Breakouts: dissertation workshop format**]{style="color:#548893;"}
+
+::: incremental
+-   Small groups organised by method/data structure (where possible)
+-   Each student brings one concrete problem
+-   We aim for "actionable next steps", not perfection
+:::
+
+::: incremental
+Suggested roles (rotate):
+
+-   Presenter (2 to 3 min)
+
+-   Discussant(s) (group)
+
+-   Scribe (captures decisions and next steps)
+:::
+
+## [**What to bring to the breakout**]{style="color:#548893;"}
+
+Bring a short "problem brief" (bullet form is fine):
+
+::: incremental
+-   Research question (one sentence)
+-   Outcome and key predictors
+-   Data structure (N, clusters, waves, source)
+-   Planned method/model (what you think you will do)
+-   What is the specific decision/block you want help with?
+:::
+
+## [**What we can realistically do in breakouts**]{style="color:#548893;"}
+
+::: incremental
+-   Clarify what the method assumes and whether your design plausibly
+    meets it
+-   Help you reframe your question into something your data can answer
+-   Troubleshoot implementation issues if you have already started
+    working with the method
+:::
+
+## [**Common problems we expect (examples)**]{style="color:#548893;"}
+
+::: incremental
+-   "My outcome is ordinal, but everyone around me uses linear models"
+-   "I have clustering and small numbers of clusters"
+-   "Missingness seems related to my outcome"
+:::
+
+## [**Let's start the breakout!**]{style="color:#548893;"}
+
+## [**Thank you**]{style="color:#548893;"}
+
+::: incremental
+-   If you did not get to raise your question, follow up by email.
+-   This is our first time implementing this workshop, so any feedback
+    is welcome! 🫶
+:::
