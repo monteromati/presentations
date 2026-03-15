@@ -9,10 +9,9 @@
 <link href="advanced-quant-methods_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.8.25">
 
-  <meta name="author" content="Matias Montero">
+  <meta name="author" content="Matías Montero">
   <meta name="author" content="Henry Tsz Fung Lo">
-  <meta name="dcterms.date" content="2026-03-04">
-  <title>Advanced Quantitative Methods Clinic (Dissertation-focused)</title>
+  <title>Advanced Quantitative Methods Workshop</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -129,12 +128,12 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title"><span style="color:#548893;"><strong>Advanced Quantitative Methods Clinic (Dissertation-focused)</strong></span></h1>
+  <h1 class="title"><span style="color:#548893;"><strong>Advanced Quantitative Methods Workshop</strong></span></h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Matias Montero 
+Matías Montero 
 </div>
 </div>
 <div class="quarto-title-author">
@@ -144,13 +143,13 @@ Henry Tsz Fung Lo
 </div>
 </div>
 
-  <p class="date">2026-03-04</p>
+  <p class="date">Wednesday, 4 March 2026</p>
 </section>
 <section id="why-this-session" class="slide level2">
 <h2><span style="color:#548893;"><strong>Why this session?</strong></span></h2>
 <ul>
 <li class="fragment">This is a dissertation-focused “clinic” for students planning to use quantitative methods.</li>
-<li class="fragment">We will <em>revisit and deepen</em> key topics from the Intro-Intermediate sequence.</li>
+<li class="fragment">We will <em>revisit and deepen</em> key topics from the Intro-Intermediate sequence, and some very brief introductions to the advanced methods that you mentioned in the survey</li>
 <li class="fragment">We will then workshop dissertation-specific questions in small groups.</li>
 </ul>
 <ul>
@@ -160,7 +159,7 @@ Henry Tsz Fung Lo
 <section id="what-this-session-is-and-is-not" class="slide level2">
 <h2><span style="color:#548893;"><strong>What this session is (and is not)</strong></span></h2>
 <ul>
-<li class="fragment"><strong>Is:</strong> targeted recap + Q&amp;A + applied troubleshooting for your dissertation.</li>
+<li class="fragment"><strong>Is:</strong> targeted recap + Q&amp;A + very short introductions on multilevel &amp; latent variable models for your dissertation.</li>
 <li class="fragment"><strong>Is:</strong> a space to pressure-test assumptions and analysis plans.</li>
 <li class="fragment"><strong>Is not:</strong> teaching an entirely new advanced method from scratch.</li>
 </ul>
@@ -171,114 +170,17 @@ Henry Tsz Fung Lo
 <section id="plan-for-today" class="slide level2">
 <h2><span style="color:#548893;"><strong>Plan for today</strong></span></h2>
 <ol type="1">
-<li class="fragment">Short recap of high-leverage topics (decision points for dissertation work)</li>
+<li class="fragment">Short recap of intro to intermediate quant methods.</li>
 <li class="fragment">Open Q&amp;A on those topics</li>
-<li class="fragment">Breakouts: dissertation-specific workshops (small groups)</li>
-<li class="fragment">Wrap-up: common patterns, next steps, resources</li>
+<li class="fragment">Very short introduction to multilevel models and latent variable modelling.</li>
+<li class="fragment">Wrap-up: next steps, resources</li>
 </ol>
 </section>
-<section id="recap-the-checkpoints-that-matter" class="slide level2">
-<h2><span style="color:#548893;"><strong>Recap: the checkpoints that matter</strong></span></h2>
-<p>We will focus on a small number of “checkpoints” that repeatedly drive dissertation outcomes: - Research question - Identification - Model choice aligned with outcome type and data structure - Handling clustering and dependence - Missing data and sensitivity - Diagnostics, robustness, and transparent reporting</p>
-</section>
-<section id="checkpoint-1-your-research-question" class="slide level2">
-<h2><span style="color:#548893;"><strong>Checkpoint 1: Your research question</strong></span></h2>
-<ul>
-<li class="fragment">What is your target quantity? (difference in means, marginal effect, causal effect, association, prediction)</li>
-<li class="fragment">What is your unit of analysis?</li>
-<li class="fragment">What is the counterfactual or comparison you rely on (if causal)?</li>
-<li class="fragment">What assumptions would need to be true for your interpretation?</li>
-</ul>
-</section>
-<section id="checkpoint-2-identification-and-threats" class="slide level2">
-<h2><span style="color:#548893;"><strong>Checkpoint 2: Identification and threats</strong></span></h2>
-<ul>
-<li class="fragment">Confounding and selection: what variables must be accounted for (and what should <em>not</em> be controlled)?</li>
-<li class="fragment">Reverse causality and simultaneity</li>
-<li class="fragment">Measurement error and construct validity</li>
-<li class="fragment">Post-treatment bias and collider bias (common dissertation traps)</li>
-</ul>
-</section>
-<section id="checkpoint-3-model-choice-and-data-structure" class="slide level2">
-<h2><span style="color:#548893;"><strong>Checkpoint 3: Model choice and data structure</strong></span></h2>
-<ul>
-<li class="fragment">Outcome type: continuous, binary, ordinal, count, time-to-event</li>
-<li class="fragment">Dependence: clustering, repeated measures, networks</li>
-<li class="fragment">Functional form: non-linearity, interactions</li>
-<li class="fragment">Interpretation: coefficients vs marginal effects vs predicted values</li>
-</ul>
-</section>
-<section id="checkpoint-4-missing-data" class="slide level2">
-<h2><span style="color:#548893;"><strong>Checkpoint 4: Missing data</strong></span></h2>
-<ul>
-<li class="fragment">What is missing, for whom, and why?</li>
-<li class="fragment">Plausible mechanism: MCAR, MAR, MNAR (what would make each plausible?)</li>
-<li class="fragment">Strategy: complete-case, multiple imputation, model-based approaches</li>
-<li class="fragment">Minimum: report missingness patterns and do a sensitivity check</li>
-</ul>
-</section>
-<section id="checkpoint-5-diagnostics-and-robustness" class="slide level2">
-<h2><span style="color:#548893;"><strong>Checkpoint 5: Diagnostics and robustness</strong></span></h2>
-<ul>
-<li class="fragment">Model fit and residual diagnostics (where applicable)</li>
-<li class="fragment">Influence/leverage and outliers</li>
-<li class="fragment">Alternative specifications that matter (not “specification fishing”)</li>
-<li class="fragment">Pre-analysis logic: what would change your conclusion?</li>
-</ul>
-</section>
-<section id="checkpoint-6-reporting-and-write-up" class="slide level2">
-<h2><span style="color:#548893;"><strong>Checkpoint 6: Reporting and write-up</strong></span></h2>
-<ul>
-<li class="fragment">Clear link: question -&gt; design -&gt; assumptions -&gt; estimation -&gt; interpretation</li>
-<li class="fragment">Tables/figures that answer the question (not just what the software outputs)</li>
-<li class="fragment">What to put in main text vs appendix</li>
-<li class="fragment">Reproducibility (open science framework): code, data, and transparent decisions</li>
-</ul>
-</section>
-<section id="qa-how-we-will-run-it" class="slide level2">
-<h2><span style="color:#548893;"><strong>Q&amp;A: how we will run it</strong></span></h2>
-<ul>
-<li class="fragment">We will start with questions on the recap checkpoints.</li>
-<li class="fragment">If a question is highly dissertation-specific, we may park it for breakouts.</li>
-</ul>
-</section>
-<section id="breakouts-dissertation-workshop-format" class="slide level2">
-<h2><span style="color:#548893;"><strong>Breakouts: dissertation workshop format</strong></span></h2>
-<ul>
-<li class="fragment">Small groups organised by method/data structure (where possible)</li>
-<li class="fragment">Each student brings one concrete problem</li>
-<li class="fragment">We aim for “actionable next steps”, not perfection</li>
-</ul>
-<p>Suggested roles (rotate): - Presenter (2 to 3 min) - Discussant(s) (group) - Scribe (captures decisions and next steps)</p>
-</section>
-<section id="what-to-bring-to-the-breakout" class="slide level2">
-<h2><span style="color:#548893;"><strong>What to bring to the breakout</strong></span></h2>
-<p>Bring a short “problem brief” (bullet form is fine): ::: {.incremental} - Research question (one sentence) - Outcome and key predictors - Data structure (N, clusters, waves, source) - Planned method/model (what you think you will do) - What is the specific decision/block you want help with? :::</p>
-</section>
-<section id="what-we-can-realistically-do-in-breakouts" class="slide level2">
-<h2><span style="color:#548893;"><strong>What we can realistically do in breakouts</strong></span></h2>
-<ul>
-<li class="fragment">Clarify what the method assumes and whether your design plausibly meets it</li>
-<li class="fragment">Help you reframe your question into something your data can answer</li>
-<li class="fragment">Troubleshoot implementation issues if you have already started working with the method</li>
-</ul>
-</section>
-<section id="common-problems-we-expect-examples" class="slide level2">
-<h2><span style="color:#548893;"><strong>Common problems we expect (examples)</strong></span></h2>
-<ul>
-<li class="fragment">“My outcome is ordinal, but everyone around me uses linear models”</li>
-<li class="fragment">“I have clustering and small numbers of clusters”</li>
-<li class="fragment">“Missingness seems related to my outcome”</li>
-</ul>
-</section>
-<section id="lets-start-the-breakout" class="slide level2">
-<h2><span style="color:#548893;"><strong>Let’s start the breakout!</strong></span></h2>
-</section>
 <section id="thank-you" class="slide level2">
-<h2><span style="color:#548893;"><strong>Thank you</strong></span></h2>
+<h2><span style="color:#548893;"><strong>Thank you!</strong></span></h2>
 <ul>
-<li class="fragment">If you did not get to raise your question, follow up by email.</li>
-<li class="fragment">This is our first time implementing this workshop so any feedback is welcome! 🫶</li>
+<li class="fragment">If you did not get to raise your question, follow up by email: <a href="mailto:matias.montero@education.ox.ac.uk">matias.montero@education.ox.ac.uk</a> and/or <a href="mailto:tsz.lo@education.ox.ac.uk">tsz.lo@education.ox.ac.uk</a></li>
+<li class="fragment">This is our first time implementing this workshop, so any feedback is welcome! 🫶</li>
 </ul>
 
 </section>
@@ -286,7 +188,7 @@ Henry Tsz Fung Lo
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p>Advanced Quantitative Methods (Dissertation clinic)</p>
+<p>Advanced Quantitative Methods (Foundations of Educational Research 2)</p>
 </div>
 </div></div>
 
